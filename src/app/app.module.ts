@@ -1,7 +1,7 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { BrowserModule, BrowserTransferStateModule } from '@angular/platform-browser';
+import { NgModule, InjectionToken } from '@angular/core';
 
-import { FlexLayoutModule, BreakPoint, BREAKPOINTS, CUSTOM_BREAKPOINTS_PROVIDER_FACTORY } from '@angular/flex-layout';
+import { FlexLayoutModule, BreakPoint, BREAKPOINTS } from '@angular/flex-layout';
 
 import { AppComponent } from './app.component';
 
@@ -13,15 +13,23 @@ const CUSTOM_BREAKPOINTS: BreakPoint[] = [{
   mediaQuery: '(max-width: 700px)',
 }];
 
+export function getCustomBreakpoints() {
+  return CUSTOM_BREAKPOINTS;
+}
+
 @NgModule({
   declarations: [
     AppComponent
   ],
   imports: [
-    BrowserModule,
+    BrowserModule.withServerTransition({ appId: 'flex-server-side' }),
+    BrowserTransferStateModule,
     FlexLayoutModule
   ],
-  providers: [CUSTOM_BREAKPOINTS_PROVIDER_FACTORY(CUSTOM_BREAKPOINTS, { defaults: true })],
+  providers: [{
+    provide: BREAKPOINTS,
+    useFactory: getCustomBreakpoints
+  }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
